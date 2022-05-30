@@ -9,22 +9,27 @@ namespace Chess.Models.Pieces
 {
     internal class Queen : Piece
     {
-        public Queen(GameState game, Player player) : base(game, player, Constants.TEXT_QUEEN)
+        public Queen() : base(Constants.TEXT_QUEEN, "Queen")
+        {
+
+        }
+
+        public Queen(Player player) : base(player, Constants.TEXT_QUEEN, "Queen")
         {
         }
 
         public override Piece Clone()
         {
-            var newPiece = new Queen(Game, Player);
+            var newPiece = new Queen(Player);
             return this.CloneProperties(newPiece);
         }
 
-        public override List<Move> GetPossibleMoves()
+        public override List<Move> GetPossibleMoves(bool isActiveMove)
         {
             var possibleMoves = new List<Move>();
-            PieceMoveHelpers.AddNeightboringCells(possibleMoves, Position, Game, Player);
-            PieceMoveHelpers.AddCellsOnStraightLines(possibleMoves, Position, Game, Player);
-            PieceMoveHelpers.AddCellsOnDiagonalLines(possibleMoves, Position, Game, Player);
+            PieceMoveHelpers.AddNeightboringCells(possibleMoves, Position, Helpers.GetCurrentGame(), Player);
+            PieceMoveHelpers.AddCellsOnStraightLines(possibleMoves, Position, Helpers.GetCurrentGame(), Player);
+            PieceMoveHelpers.AddCellsOnDiagonalLines(possibleMoves, Position, Helpers.GetCurrentGame(), Player);
             return possibleMoves;
         }
     }

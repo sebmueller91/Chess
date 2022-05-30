@@ -51,7 +51,7 @@ namespace Chess.Services
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    if (game.Board[i, j].Player == playerToCheck)
+                    if (game.Board[i][j].Player == playerToCheck)
                     {
                         var curPossibleMoves = GetPossibleMoves(game, new Cell(i, j), playerToCheck);
                         if (curPossibleMoves.Any())

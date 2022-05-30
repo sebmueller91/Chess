@@ -3,6 +3,7 @@ using Chess.Models;
 using Chess.Models.Pieces;
 using Chess.Moves;
 using Chess.Moves.Actions;
+using Chess.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,19 @@ namespace Chess.Utils
 {
     public static class Helpers
     {
+        public static GameState GetCurrentGame()
+        {
+            return ActiveGameProviderService.Instance.CurrentGame;
+        }
+        public static T[][] TwoDimJaggedArray<T>(int rows, int cols)
+        {
+            var array = new T[rows][];
+            for (int i = 0; i < rows; i++)
+            {
+                array[i] = new T[cols];
+            }
+            return array;
+        }
         public static Player GetOpposingPlayer(Player player)
         {
             if (player == Player.Black)

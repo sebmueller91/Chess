@@ -25,6 +25,7 @@ namespace Chess
         {
             UnityContainer.RegisterType<IExecutePieceMoveService, ExecutePieceMoveService>();
             UnityContainer.RegisterType<IPieceMoveOptionsService, PieceMoveOptionsService>();
+            UnityContainer.RegisterSingleton<IDataStoreService, DataStoreService>();
         }
         protected override void OnStart()
         {

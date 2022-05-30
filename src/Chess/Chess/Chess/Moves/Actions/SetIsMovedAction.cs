@@ -1,4 +1,6 @@
 ﻿using Chess.Models;
+using Chess.Services;
+using Chess.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,32 +9,34 @@ namespace Chess.Moves.Actions
 {
     internal class SetIsMovedAction : RevertableAction
     {
-        private Cell m_position;
+        public Cell Position { get; set; }
+        public bool PreviousState { get; set; }
 
-        public SetIsMovedAction(Cell position, GameState game) : base(game)
+        public SetIsMovedAction(Cell position) : base("SetIsMovedAction")
         {
-            m_position = position;
+            Position = position;
         }
 
         public override void Execute()
         {
-            if (m_position != null && Game?.Board != null)
+            if (Position != null && Helpers.GetCurrentGame()?.Board != null)
             {
-                Game.Board[m_position.Row,m_position.Col].IsMoved = true;
+                PreviousState = Helpers.GetCurrentGame().Board[Position.Row][Position.Col].IsMoved;
+                Helpers.GetCurrentGame().Board[Position.Row][Position.Col].IsMoved = true;
             }
         }
 
         public override void Rollback()
         {
-            if (m_position != null && Game?.Board != null)
+            if (Position != null && Helpers.GetCurrentGame()?.Board != null)
             {
-                Game.Board[m_position.Row, m_position.Col].IsMoved = false;
+                Helpers.GetCurrentGame().Board[Position.Row][Position.Col].IsMoved = PreviousState;
             }
         }
 
         public override RevertableAction Clone()
         {
-            return new SetIsMovedAction(m_position.Clone(), Game);
+            return new SetIsMovedAction(Position.Clone());
         }
     }
 }

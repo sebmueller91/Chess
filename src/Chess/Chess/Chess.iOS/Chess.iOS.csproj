@@ -61,6 +61,7 @@
     <MtouchArch>ARM64</MtouchArch>
     <CodesignKey>iPhone Developer</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    <MtouchLink>SdkOnly</MtouchLink>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
@@ -138,7 +139,7 @@
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\Chess\Chess.csproj">
-      <Project>{DD30B86C-868C-45E8-818F-F2B0AD5D2D57}</Project>
+      <Project>{62DC0E6A-949D-489F-A02A-1C7B7D504FF7}</Project>
       <Name>Chess</Name>
     </ProjectReference>
   </ItemGroup>

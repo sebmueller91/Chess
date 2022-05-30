@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using Xamarin.Forms;
 
@@ -7,6 +8,27 @@ namespace Chess.Config
 {
     public static class Constants
     {
+        public static readonly string IDENTIFIER_GAMESTATE_PVP = "IDENTIFIER_GAMESTATE_PVP";
+
+        public const string DatabaseFilename = "chess.db3";
+        public static string DatabasePath
+        {
+            get
+            {
+                var basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                return Path.Combine(basePath, DatabaseFilename);
+            }
+        }
+
+        public const SQLite.SQLiteOpenFlags Flags =
+        // open the database in read/write mode
+        SQLite.SQLiteOpenFlags.ReadWrite |
+        // create the database if it doesn't exist
+        SQLite.SQLiteOpenFlags.Create |
+        // enable multi-threaded database access
+        SQLite.SQLiteOpenFlags.SharedCache;
+
+
         public static readonly Color COLOR_TRANSPARENT = Xamarin.Forms.Color.FromHex("00FBC1BC");
         public static readonly Color COLOR_SELECTED_CELL_BACKGROUND = Xamarin.Forms.Color.FromHex("66ff66");
         public static readonly Color COLOR_PLAYER_WHITE = Color.White;

@@ -8,28 +8,9 @@ namespace Chess.Moves
 {
     public class MoveStack
     {
-        public List<Move> Moves { get; private set; }
-        public Move Iterator { get; private set; }
-        private int _iteratorIndex;
-        public int IteratorIndex
-        {
-            get { return _iteratorIndex; }
-            private set
-            {
-                if (value >= 0 && value < Moves.Count)
-                {
-                    _iteratorIndex = value;
-                    Iterator = Moves[_iteratorIndex];
-                }
-            }
-        }
+        public List<Move> Moves { get; set; } = new List<Move>();
 
-        public MoveStack()
-        {
-            Moves = new List<Move>();
-            Moves.Add(null);
-            IteratorIndex = 0;
-        }
+        public int IteratorIndex { get; set; } = -1;
 
         public MoveStack Clone()
         {
@@ -48,7 +29,7 @@ namespace Chess.Moves
 
         public bool DoneActionsOnStack()
         {
-            return IteratorIndex > 0;
+            return IteratorIndex >= 0;
         }
 
         public bool UndoneActionsOnStack()
@@ -58,7 +39,7 @@ namespace Chess.Moves
 
         public void ExecuteMove(Move move)
         {
-            DeleteElementsAfterIndex(IteratorIndex);
+            DeleteElementsAfterIndex((int)IteratorIndex);
             move.Execute();
             Moves.Add(move);
             IteratorIndex = Moves.Count - 1;
@@ -70,7 +51,7 @@ namespace Chess.Moves
             {
                 return;
             }
-            Iterator.Rollback();
+            Moves[IteratorIndex].Rollback();
             IteratorIndex--;
         }
 
@@ -81,12 +62,12 @@ namespace Chess.Moves
                 return;
             }
             IteratorIndex++;
-            Iterator.Execute();
+            Moves[IteratorIndex].Execute();
         }
-
+        
         private void DeleteElementsAfterIndex(int index)
         {
-            if (index < 0 || index >= Moves.Count)
+            if (index <= 0 || index >= Moves.Count)
             {
                 return;
             }

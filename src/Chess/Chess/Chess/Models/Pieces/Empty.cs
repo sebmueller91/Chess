@@ -8,17 +8,18 @@ namespace Chess.Models.Pieces
 {
     internal class Empty : Piece
     {
-        public Empty(GameState game) : base(game, Player.None, Constants.TEXT_EMPTY)
+
+        public Empty() : base(Player.None, Constants.TEXT_EMPTY, "Empty")
         {
         }
 
         public override Piece Clone()
         {
-            var newPiece = new Empty(Game);
+            var newPiece = new Empty();
             return this.CloneProperties(newPiece);
         }
 
-        public override List<Move> GetPossibleMoves()
+        public override List<Move> GetPossibleMoves(bool isActiveMove)
         {
             return new List<Move>();
         }

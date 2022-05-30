@@ -1,17 +1,21 @@
 ﻿using Chess.Models;
+using Chess.Services;
+using Chess.Utils;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Chess.Moves.Actions
 {
+    [JsonConverter(typeof(BaseConverter))]
     public abstract class RevertableAction
     {
-        public GameState Game { get; set; }
+        public string ObjType { get; protected set; }
 
-        public RevertableAction(GameState game)
+        public RevertableAction(string objType)
         {
-            this.Game = game;
+            ObjType = objType;
         }
         public abstract RevertableAction Clone();
 

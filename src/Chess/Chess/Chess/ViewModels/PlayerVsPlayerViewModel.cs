@@ -10,7 +10,9 @@ using System.Linq;
 using System.Text;
 using System.Windows.Input;
 using Xamarin.Forms;
+using System.Threading.Tasks;
 using Cell = Chess.Models.Cell;
+using Chess.Config;
 
 namespace Chess.ViewModels
 {
@@ -23,6 +25,10 @@ namespace Chess.ViewModels
         public Command UndoLastMoveCommand { get; private set; }
         public Command RedoNextMoveCommand { get; private set; }
 
+        public Command SaveCurrentGameStateCommand { get; private set; }
+        public Command LoadGameStateCommand { get; private set; }
+
+
         public Command ResetGameCommand { get; private set; }
 
         public Action<Player> DisplayPlayerWonNotification { get; set; }
@@ -34,8 +40,7 @@ namespace Chess.ViewModels
 
         public List<Cell> KingsInCheck { get; private set; } = new List<Cell>();
 
-        public bool OrientationReverted { get; set; } = false;
-
+        #region IsUndoLastMoveEnabled
         private bool _isUndoLastMoveEnabled = false;
         public bool IsUndoLastMoveEnabled
         {
@@ -45,11 +50,13 @@ namespace Chess.ViewModels
             }
             set
             {
-                _isUndoLastMoveEnabled= value;
+                _isUndoLastMoveEnabled = value;
                 OnPropertyChanged();
             }
         }
+        #endregion
 
+        #region _isRedoNextMoveEnabled
         private bool _isRedoNextMoveEnabled = false;
         public bool IsRedoNextMoveEnabled
         {
@@ -59,31 +66,54 @@ namespace Chess.ViewModels
             }
             set
             {
-                _isRedoNextMoveEnabled= value;
+                _isRedoNextMoveEnabled = value;
                 OnPropertyChanged();
             }
         }
+        #endregion
 
         private IExecutePieceMoveService _executePieceMoveService { get; set; }
         private IPieceMoveOptionsService _pieceMoveOptionsService { get; set; }
+        private IDataStoreService _dataStore { get; set; }
+
         private Cell _pawnPromotionSelectedCell = null;
 
         Cell previouslySelectedCell = null;
-        public PlayerVsPlayerViewModel(IExecutePieceMoveService executePieceMoveService, IPieceMoveOptionsService pieceMoveOptionsService)
+        public PlayerVsPlayerViewModel(IExecutePieceMoveService executePieceMoveService,
+            IPieceMoveOptionsService pieceMoveOptionsService,
+            IDataStoreService dataStore)
         {
             Title = "Player VS Player";
-
             Game = new GameState();
+
             _executePieceMoveService = executePieceMoveService;
             _pieceMoveOptionsService = pieceMoveOptionsService;
+            _dataStore = dataStore;
 
             CellSelectedCommand = new Command<Tuple<int, int>>(CellSelectedCommandHandler);
             UndoLastMoveCommand = new Command(UndoLastMoveCommandHandler);
             RedoNextMoveCommand = new Command(RedoNextMoveCommandHandler);
             PromotePawnCommand = new Command<Type>(PromotePawnCommandHandler);
             ResetGameCommand = new Command(ResetGameCommandHandler);
+            SaveCurrentGameStateCommand = new Command(SaveCurrentGameStateCommandHandler);
+            LoadGameStateCommand = new Command(LoadGameStateCommandHandler);
+
             ModelChanged += UpdateCanUndoLastMove;
             ModelChanged += UpdateCanRedoNextMove;
+        }
+
+        private void SaveCurrentGameStateCommandHandler()
+        {
+            _dataStore.InsertGameIntoDatabase(Constants.IDENTIFIER_GAMESTATE_PVP, Game);
+        }
+
+        private void LoadGameStateCommandHandler()
+        {
+            var loaded_game = _dataStore.GetGameFromDatabase(Constants.IDENTIFIER_GAMESTATE_PVP);
+            Game = (loaded_game == null) ? new GameState() : loaded_game;
+
+            ActiveGameProviderService.Instance.RegisterCurrentGame(Game);
+            FireModelChangedEvent();
         }
 
         private void PromotePawnCommandHandler(Type type)
@@ -93,18 +123,19 @@ namespace Chess.ViewModels
             UpdateField();
         }
 
-        
+
         private void CellSelectedCommandHandler(Tuple<int, int> position)
         {
             previouslySelectedCell = SelectedCell;
             var newlySelectedCell = new Cell(position.Item1, position.Item2);
-            
+
 
             if (Helpers.MoveToPositionPromotesPawn(PossibleMovesForCurrentPiece, newlySelectedCell))
             {
                 _pawnPromotionSelectedCell = newlySelectedCell;
                 RequestRetrievePromotePawnType?.Invoke();
-            } else
+            }
+            else
             {
                 SelectedCell = new Cell(position.Item1, position.Item2);
                 UpdateField();
@@ -116,13 +147,13 @@ namespace Chess.ViewModels
         {
             if (SelectedCell != null)
             {
-                if (Game.Board[SelectedCell.Row, SelectedCell.Col].Player == Game.CurrentPlayer)
+                if (Game.Board[SelectedCell.Row][SelectedCell.Col].Player == Game.CurrentPlayer)
                 {
                     PossibleMovesForCurrentPiece = _pieceMoveOptionsService.GetPossibleMoves(Game, SelectedCell, Game.CurrentPlayer);
                 }
                 else if (previouslySelectedCell != null
-                         && Game.Board[previouslySelectedCell.Row, previouslySelectedCell.Col].Player == Game.CurrentPlayer
-                         && Game.Board[SelectedCell.Row, SelectedCell.Col].Player != Game.CurrentPlayer)
+                         && Game.Board[previouslySelectedCell.Row][previouslySelectedCell.Col].Player == Game.CurrentPlayer
+                         && Game.Board[SelectedCell.Row][SelectedCell.Col].Player != Game.CurrentPlayer)
                 {
                     if (PossibleMovesForCurrentPiece.Any(x => x.ToCell == SelectedCell))
                     {
@@ -134,17 +165,16 @@ namespace Chess.ViewModels
                 }
             }
 
-            foreach (var player in new Player[] {Player.White, Player.Black})
+            if (_pieceMoveOptionsService.IsCheckmate(Game, Game.CurrentPlayer))
             {
-                if (_pieceMoveOptionsService.IsCheckmate(Game, player))
-                {
-                    DisplayPlayerWonNotification?.Invoke(Helpers.GetOpposingPlayer(player)); 
-                }
-                if (_pieceMoveOptionsService.IsStalemate(Game, player))
-                {
-                    DisplayStalemateNotification?.Invoke(Helpers.GetOpposingPlayer(player));
-                }
+                DisplayPlayerWonNotification?.Invoke(Helpers.GetOpposingPlayer(Game.CurrentPlayer));
             }
+            if (_pieceMoveOptionsService.IsStalemate(Game, Game.CurrentPlayer))
+            {
+                DisplayStalemateNotification?.Invoke(Helpers.GetOpposingPlayer(Game.CurrentPlayer));
+            }
+
+            SaveCurrentGameStateCommand.Execute(null);
 
             UpdateKingsInCheck();
 
@@ -154,10 +184,12 @@ namespace Chess.ViewModels
         private void UpdateKingsInCheck()
         {
             KingsInCheck?.Clear();
-            if (_pieceMoveOptionsService.KingIsInCheck(Game, Player.White)) {
+            if (_pieceMoveOptionsService.KingIsInCheck(Game, Player.White))
+            {
                 KingsInCheck.Add(PieceMoveHelpers.GetPositionOfKing(Game, Player.White));
             }
-            if (_pieceMoveOptionsService.KingIsInCheck(Game, Player.Black)) {
+            if (_pieceMoveOptionsService.KingIsInCheck(Game, Player.Black))
+            {
                 KingsInCheck.Add(PieceMoveHelpers.GetPositionOfKing(Game, Player.Black));
             }
             FireModelChangedEvent();
@@ -192,6 +224,8 @@ namespace Chess.ViewModels
         private void ResetGameCommandHandler(object obj)
         {
             Game = new GameState();
+            ActiveGameProviderService.Instance.RegisterCurrentGame(Game);
+
             FireModelChangedEvent();
         }
 

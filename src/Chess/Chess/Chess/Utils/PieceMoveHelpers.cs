@@ -19,9 +19,9 @@ namespace Chess.Utils
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    if (game.Board[i, j].Player == Helpers.GetOpposingPlayer(playerToCheck))
+                    if (game.Board[i][j].Player == Helpers.GetOpposingPlayer(playerToCheck))
                     {
-                        var possibleMovesOfCurPiece = game.Board[i, j].GetPossibleMoves();
+                        var possibleMovesOfCurPiece = game.Board[i][j].GetPossibleMoves(false);
                         possibleMoves.AddRange(possibleMovesOfCurPiece);
                     }
                 }
@@ -135,12 +135,12 @@ namespace Chess.Utils
 
         public static bool AddCellAndCheckIfToContinue(List<Move> possibleMoves, Cell fromCell, Cell toCell, GameState game, Player player)
         {
-            if (game.Board[toCell.Row, toCell.Col].Player == player)
+            if (game.Board[toCell.Row][toCell.Col].Player == player)
             {
                 return false;
             }
             AddIfValid(possibleMoves, fromCell, toCell, game, player);
-            if (game.Board[toCell.Row, toCell.Col].Player == Helpers.GetOpposingPlayer(player))
+            if (game.Board[toCell.Row][toCell.Col].Player == Helpers.GetOpposingPlayer(player))
             {
                 return false;
             }
@@ -170,7 +170,7 @@ namespace Chess.Utils
             {
                 return false;
             }
-            if (game.Board[toCell.Row, toCell.Col].Player == player)
+            if (game.Board[toCell.Row][toCell.Col].Player == player)
             {
                 return false;
             }
@@ -181,7 +181,7 @@ namespace Chess.Utils
 
             if (condition(toCell.Row, toCell.Col))
             {
-                var move = new Move(fromCell, new Cell(toCell.Row, toCell.Col), game);
+                var move = new Move(fromCell, new Cell(toCell.Row, toCell.Col));
                 possibleMoves.Add(move);
                 return true;
             }
@@ -228,7 +228,7 @@ namespace Chess.Utils
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    if (game.Board[i, j] is King && game.Board[i, j].Player == player)
+                    if (game.Board[i][j] is King && game.Board[i][j].Player == player)
                     {
                         return new Cell(i, j);
                     }

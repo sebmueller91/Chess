@@ -1,5 +1,6 @@
 ﻿using Chess.Models;
 using Chess.Models.Pieces;
+using Chess.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace Chess.Moves.Actions
 {
     internal class PromotePawnAction : RevertableAction
     {
-        public Cell Position { get; private set; }
-        public Type PieceType { get; private set; }
-        public Player Player { get; private set; }
-        public PromotePawnAction(Cell position, Type type, GameState game) : base(game)
+        public Cell Position { get; set; }
+        public Type PieceType { get; set; }
+        public Player Player { get; set; }
+        public PromotePawnAction(Cell position, Type type) : base("PromotePawnAction")
         {
             this.Position = position;
             PieceType = type;
@@ -20,18 +21,18 @@ namespace Chess.Moves.Actions
 
         public override void Execute()
         {
-            Player = Game.Board[Position.Row, Position.Col].Player;
-            Game.SetBoardEntry(Position, (Piece)Activator.CreateInstance(PieceType, Game, Player));
+            Player = Helpers.GetCurrentGame().Board[Position.Row][Position.Col].Player;
+            Helpers.GetCurrentGame().SetBoardEntry(Position, (Piece)Activator.CreateInstance(PieceType, Player));
         }
 
         public override void Rollback()
         {
-             Game.SetBoardEntry(Position, new Pawn(Game, Player));
+             Helpers.GetCurrentGame().SetBoardEntry(Position, new Pawn(Player));
         }
 
         public override RevertableAction Clone()
         {
-            return new PromotePawnAction(Position.Clone(), PieceType, Game);
+            return new PromotePawnAction(Position.Clone(), PieceType);
         }
     }
 }

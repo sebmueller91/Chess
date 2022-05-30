@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Chess.Services
 {
-    public class MockDataStore : IDataStore<bool>
+    public class MockDataStore : IDataStoreService
     {
         public Task<bool> AddItemAsync(bool item)
         {
@@ -18,6 +18,10 @@ namespace Chess.Services
             throw new NotImplementedException();
         }
 
+        public GameState GetGameFromDatabase(string identifier)
+        {
+            throw new NotImplementedException();
+        }
         public Task<bool> GetItemAsync(string id)
         {
             throw new NotImplementedException();
@@ -28,7 +32,17 @@ namespace Chess.Services
             throw new NotImplementedException();
         }
 
+        public Task<int> InsertGameIntoDatabase(string identifier, GameState game)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<bool> UpdateItemAsync(bool item)
+        {
+            throw new NotImplementedException();
+        }
+
+        int IDataStoreService.InsertGameIntoDatabase(string identifier, GameState game)
         {
             throw new NotImplementedException();
         }

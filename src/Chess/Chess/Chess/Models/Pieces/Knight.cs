@@ -9,28 +9,33 @@ namespace Chess.Models.Pieces
 {
     internal class Knight : Piece
     {
-        public Knight(GameState game, Player player) : base(game, player, Constants.TEXT_KNIGHT)
+        public Knight() : base(Constants.TEXT_KNIGHT, "Knight")
+        {
+
+        }
+
+        public Knight(Player player) : base(player, Constants.TEXT_KNIGHT, "Knight")
         {
         }
 
         public override Piece Clone()
         {
-            var newPiece = new Knight(Game, Player);
+            var newPiece = new Knight(Player);
             return this.CloneProperties(newPiece);
         }
-        public override List<Move> GetPossibleMoves()
+        public override List<Move> GetPossibleMoves(bool isActiveMove)
         {
             var possibleMoves = new List<Move>();
 
-            PieceMoveHelpers.AddIfValid(possibleMoves, Position, new Cell(Position.Row + 2, Position.Col + 1), Game, Player);
-            PieceMoveHelpers.AddIfValid(possibleMoves, Position, new Cell(Position.Row + 2, Position.Col - 1), Game, Player);
-            PieceMoveHelpers.AddIfValid(possibleMoves, Position, new Cell(Position.Row - 2, Position.Col + 1), Game, Player);
-            PieceMoveHelpers.AddIfValid(possibleMoves, Position, new Cell(Position.Row - 2, Position.Col - 1), Game, Player);
-                           
-            PieceMoveHelpers.AddIfValid(possibleMoves, Position, new Cell(Position.Row + 1, Position.Col + 2), Game, Player);
-            PieceMoveHelpers.AddIfValid(possibleMoves, Position, new Cell(Position.Row - 1, Position.Col + 2), Game, Player);
-            PieceMoveHelpers.AddIfValid(possibleMoves, Position, new Cell(Position.Row + 1, Position.Col - 2), Game, Player);
-            PieceMoveHelpers.AddIfValid(possibleMoves, Position, new Cell(Position.Row - 1, Position.Col - 2), Game, Player);
+            PieceMoveHelpers.AddIfValid(possibleMoves, Position, new Cell(Position.Row + 2, Position.Col + 1), Helpers.GetCurrentGame(), Player);
+            PieceMoveHelpers.AddIfValid(possibleMoves, Position, new Cell(Position.Row + 2, Position.Col - 1), Helpers.GetCurrentGame(), Player);
+            PieceMoveHelpers.AddIfValid(possibleMoves, Position, new Cell(Position.Row - 2, Position.Col + 1), Helpers.GetCurrentGame(), Player);
+            PieceMoveHelpers.AddIfValid(possibleMoves, Position, new Cell(Position.Row - 2, Position.Col - 1), Helpers.GetCurrentGame(), Player);
+                                                                                                               
+            PieceMoveHelpers.AddIfValid(possibleMoves, Position, new Cell(Position.Row + 1, Position.Col + 2), Helpers.GetCurrentGame(), Player);
+            PieceMoveHelpers.AddIfValid(possibleMoves, Position, new Cell(Position.Row - 1, Position.Col + 2), Helpers.GetCurrentGame(), Player);
+            PieceMoveHelpers.AddIfValid(possibleMoves, Position, new Cell(Position.Row + 1, Position.Col - 2), Helpers.GetCurrentGame(), Player);
+            PieceMoveHelpers.AddIfValid(possibleMoves, Position, new Cell(Position.Row - 1, Position.Col - 2), Helpers.GetCurrentGame(), Player);
 
             return possibleMoves;
         }

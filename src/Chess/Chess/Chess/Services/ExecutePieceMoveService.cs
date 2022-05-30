@@ -4,6 +4,8 @@ using Chess.Utils;
 using Cell = Chess.Models.Cell;
 using Chess.Moves;
 using Chess.Moves.Actions;
+using System;
+using System.Linq;
 
 namespace Chess.Services
 {
@@ -36,17 +38,45 @@ namespace Chess.Services
             move.Execute();
         }
 
-        private void AddAdditionalMoves(GameState game, Move move)
+        private void AddAdditionalMoves(GameState game, Move move) 
         {
-            var setIsMovedAction = new SetIsMovedAction(move.FromCell, game);
-            move.Actions.Insert(0, setIsMovedAction);
+            AddActionToMoveIfNoActionOfSameTypeContained(move, new SetIsMovedAction(move.FromCell), true);
 
-            if (game.Board[move.ToCell.Row, move.ToCell.Col].Player == Helpers.GetOpposingPlayer(game.CurrentPlayer))
+            if (game.Board[move.ToCell.Row][move.ToCell.Col].Player == Helpers.GetOpposingPlayer(game.CurrentPlayer))
             {
-                var captureAction = new CapturePieceAction(new Cell(move.ToCell.Row, move.ToCell.Col), game);
-                move.Actions.Insert(0, captureAction);
+                var captureAction = new CapturePieceAction(new Cell(move.ToCell.Row, move.ToCell.Col));
+                AddActionToMoveIfNoActionOfSameTypeContained(move, captureAction, true);
             }
-            move.Actions.Add(new UpdateCurrentPlayerAction(game));
+            AddActionToMoveIfNoActionOfSameTypeContained(move, new UpdateCurrentPlayerAction(), true);
+        }
+
+        private void AddActionToMoveIfNoActionOfSameTypeContained(Move move, RevertableAction action, bool prepend = false)
+        {
+            if (MoveContainsActionOfType(move, action.GetType()))
+            {
+                return;
+            }
+
+            if (prepend)
+            {
+                move?.Actions.Insert(0, action);
+            } else
+            {
+                move.Actions.Add(action);
+            }
+        }
+
+        private bool MoveContainsActionOfType(Move move, Type type)
+        {
+            for(int i = 0; i < move?.Actions.Count; i++)
+            {
+                var action = move.Actions[i];
+                if (action.GetType() == type)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

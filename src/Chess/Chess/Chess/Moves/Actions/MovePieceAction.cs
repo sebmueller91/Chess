@@ -1,5 +1,7 @@
 ﻿using Chess.Models;
 using Chess.Models.Pieces;
+using Chess.Services;
+using Chess.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,10 +10,10 @@ namespace Chess.Moves.Actions
 {
     internal class MovePieceAction : RevertableAction
     {
-        public Cell OldCell { get; private set; }
-        public Cell NewCell { get; private set; }
+        public Cell OldCell { get; set; }
+        public Cell NewCell { get; set; }
 
-        public MovePieceAction(Cell fromCell, Cell toCell, GameState game) : base(game)
+        public MovePieceAction(Cell fromCell, Cell toCell) : base("MovePieceAction")
         {
             OldCell = fromCell;
             NewCell = toCell;
@@ -19,19 +21,21 @@ namespace Chess.Moves.Actions
 
         public override void Execute()
         {
-            Game.SetBoardEntry(NewCell, Game.Board[OldCell.Row, OldCell.Col]);
-            Game.SetBoardEntry(OldCell, new Empty(Game));
+            GameState game = Helpers.GetCurrentGame();
+            game.SetBoardEntry(NewCell, game.Board[OldCell.Row][OldCell.Col]);
+            game.SetBoardEntry(OldCell, new Empty());
         }
 
         public override void Rollback()
         {
-            Game.SetBoardEntry(OldCell, Game.Board[NewCell.Row, NewCell.Col]);
-            Game.SetBoardEntry(NewCell, new Empty(Game));
+            GameState game = Helpers.GetCurrentGame();
+            game.SetBoardEntry(OldCell, Helpers.GetCurrentGame().Board[NewCell.Row][NewCell.Col]);
+            game.SetBoardEntry(NewCell, new Empty());
         }
 
         public override RevertableAction Clone()
         {
-            return new MovePieceAction(OldCell.Clone(), NewCell.Clone(), Game);
+            return new MovePieceAction(OldCell.Clone(), NewCell.Clone());
         }
     }
 }

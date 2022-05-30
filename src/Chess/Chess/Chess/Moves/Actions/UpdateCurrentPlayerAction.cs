@@ -1,4 +1,5 @@
 ﻿using Chess.Models;
+using Chess.Services;
 using Chess.Utils;
 using System;
 using System.Collections.Generic;
@@ -10,27 +11,26 @@ namespace Chess.Moves.Actions
     {
         public Player PlayerBeforeChange { get; set; }
 
-        public UpdateCurrentPlayerAction(GameState game) : base(game)
-        {
-            PlayerBeforeChange = game.CurrentPlayer;
-            Game = game;
+        public UpdateCurrentPlayerAction() : base("UpdateCurrentPlayerAction")
+        { 
         }
 
         public override RevertableAction Clone()
         {
-            var newAction = new UpdateCurrentPlayerAction(Game);
+            var newAction = new UpdateCurrentPlayerAction();
             newAction.PlayerBeforeChange = PlayerBeforeChange;
             return newAction;
         }
 
         public override void Execute()
         {
-            Game.CurrentPlayer = Helpers.GetOpposingPlayer(PlayerBeforeChange);
+            PlayerBeforeChange = Helpers.GetCurrentGame().CurrentPlayer;
+            Helpers.GetCurrentGame().CurrentPlayer = Helpers.GetOpposingPlayer(PlayerBeforeChange);
         }
 
         public override void Rollback()
         {
-            Game.CurrentPlayer = PlayerBeforeChange;
+            Helpers.GetCurrentGame().CurrentPlayer = PlayerBeforeChange;
         }
     }
 }

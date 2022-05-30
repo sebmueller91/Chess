@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Chess.Models
 {
@@ -25,6 +26,10 @@ namespace Chess.Models
         public static bool operator !=(Cell c1, Cell c2)
         {
             return c1?.Row != c2?.Row || c1?.Col != c2?.Col;
+        }
+
+        public Cell()
+        {
         }
 
         public Cell(int row, int col)

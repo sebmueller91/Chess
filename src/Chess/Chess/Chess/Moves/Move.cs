@@ -11,18 +11,15 @@ namespace Chess.Moves
         public Cell FromCell { get; set; }
         public Cell ToCell { get; set; }
 
-        public GameState Game { get; set; }
-
         public List<RevertableAction> Actions { get; set; } = new List<RevertableAction>();
 
-        public Move(Cell fromCell, Cell toCell, GameState game, List<RevertableAction> actions = null)
+        public Move(Cell fromCell, Cell toCell, List<RevertableAction> actions = null)
         {
             FromCell = fromCell;
             ToCell = toCell;
-            Game = game;
 
             if (actions == null) { 
-            Actions.Add(new MovePieceAction(fromCell, toCell, game));
+            Actions.Add(new MovePieceAction(fromCell, toCell));
             } else
             {
                 Actions = actions;
@@ -52,7 +49,7 @@ namespace Chess.Moves
             {
                 newActions.Add(Actions[i].Clone());
             }
-            var newMove = new Move(FromCell.Clone(), ToCell.Clone(), Game, newActions);
+            var newMove = new Move(FromCell.Clone(), ToCell.Clone(), newActions);
             return newMove;
         }
     }

@@ -55,7 +55,7 @@ namespace Chess.Views
 
                     button.HeightRequest = 5;//TODO: Move into Constants
                     button.FontSize = 25;//TODO: Move into Constants
-                    button.Text = _viewModel.Game.Board[i, j].Symbol;
+                    button.Text = _viewModel.Game.Board[i][j].Symbol;
 
                     var backgroundLabel = new Label()
                     {
@@ -77,6 +77,17 @@ namespace Chess.Views
             AssignCellSelectedBindings();
         }
 
+        protected override void OnAppearing()
+        {
+            _viewModel.LoadGameStateCommand?.Execute(null);
+            AssignCellSelectedBindings();
+        }
+
+        //protected override void OnDisappearing()
+        //{
+        //    _viewModel.SaveCurrentGameStateCommand?.Execute(null);
+        //}
+
         private async void ResetButtonClickedHandler(object sender, EventArgs e)
         {
             var answer = await DisplayAlert("Reset Game", "Do you really want to reset the game?", "Reset", "Cancel");
@@ -88,9 +99,10 @@ namespace Chess.Views
 
         private void RevertOrientationHandler(object sender, EventArgs e)
         {
-            _viewModel.OrientationReverted = !_viewModel.OrientationReverted;
+            _viewModel.Game.OrientationReverted = !_viewModel.Game.OrientationReverted;
             AssignCellSelectedBindings(false);
             RenderChessGame();
+            _viewModel.SaveCurrentGameStateCommand?.Execute(null);
         }
 
         private void DisplayPlayerWonDialog(Player player)
@@ -136,9 +148,9 @@ namespace Chess.Views
 
         private void RenderChessGame()
         {
-            for (int i = 0; i < _viewModel.Game.Board.GetLength(0); i++)
+            for (int i = 0; i < 8; i++)
             {
-                for (int j = 0; j < _viewModel.Game.Board.GetLength(1); j++)
+                for (int j = 0; j < 8; j++)
                 {
                     _ChessGridButtons[getRowIndex(i), j].Text = GetCellText(i, j);
                     _ChessGridButtons[getRowIndex(i), j].Background = GetCellColor(i, j);
@@ -149,7 +161,7 @@ namespace Chess.Views
 
         private int getRowIndex(int r)
         {
-            return _viewModel.OrientationReverted ? 7 - r : r;
+            return _viewModel.Game.OrientationReverted ? 7 - r : r;
         }
 
         private string GetCellText(int row, int col)
@@ -157,13 +169,13 @@ namespace Chess.Views
 
             if (_viewModel.PossibleMovesForCurrentPiece != null
                        && _viewModel.PossibleMovesForCurrentPiece.Any(x => x.ToCell.Row == row && x.ToCell.Col == col)
-                       && _viewModel.Game.Board[row, col].Player == Player.None)
+                       && _viewModel.Game.Board[row][col].Player == Player.None)
             {
                 return Constants.TEXT_POSSIBLE_MOVE;
             }
             else
             {
-                return _viewModel.Game.Board[row, col].Symbol;
+                return _viewModel.Game.Board[row][col].Symbol;
             }
         }
 
@@ -177,7 +189,7 @@ namespace Chess.Views
             }
             else if (_viewModel.PossibleMovesForCurrentPiece != null
                      && _viewModel.PossibleMovesForCurrentPiece.Any(x => x.ToCell.Row == row && x.ToCell.Col == col)
-                     && _viewModel.Game.Board[row, col].Player == Helpers.GetOpposingPlayer(_viewModel.Game.CurrentPlayer))
+                     && _viewModel.Game.Board[row][col].Player == Helpers.GetOpposingPlayer(_viewModel.Game.CurrentPlayer))
             {
                 color = Constants.COLOR_TRANSPARENT;
             }
@@ -197,12 +209,12 @@ namespace Chess.Views
         {
             if (_viewModel.PossibleMovesForCurrentPiece != null
                 && _viewModel.PossibleMovesForCurrentPiece.Any(x => x.ToCell.Row == row && x.ToCell.Col == col)
-                && _viewModel.Game.Board[row, col] is Empty)
+                && _viewModel.Game.Board[row][col] is Empty)
             {
                 return Constants.COLOR_POSSIBLE_MOVE_CELL;
             }
 
-            if (_viewModel.Game.Board[row, col].Player == Player.White)
+            if (_viewModel.Game.Board[row][col].Player == Player.White)
             {
                 return Constants.COLOR_PLAYER_WHITE;
             }
