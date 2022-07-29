@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="{Binding Title}"
+             xmlns:local="clr-namespace:Chess.ViewModels"  
+             xmlns:model="clr-namespace:Chess.Models"  
+             x:Class="Chess.Views.MenuPage">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackLayout Grid.Row="1">
+                <Button Text="Player vs Player" HeightRequest="50" Margin="50, 10" Command="{Binding PlayerVsPlayerButtonClickedCommand}"/>
+                <Button Text="Player vs AI" HeightRequest="50" Margin="50, 10" Command="{Binding PlayerVsAIButtonClickedCommand}"/>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

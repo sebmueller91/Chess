@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Chess.Views.PlayerVsPlayerPage"
+             Title="{Binding Title}"
+             xmlns:local="clr-namespace:Chess.ViewModels"  
+             xmlns:model="clr-namespace:Chess.Models" >
+    <ContentPage.Content>
+        <StackLayout>
+            <StackLayout Orientation="Horizontal"
+                         Margin="20"
+                         HorizontalOptions="Center">
+                <Label Text="Current Player:" FontSize="15"/>
+                <Label Text="{Binding Game.CurrentPlayer}" FontSize="15"/>
+            </StackLayout>
+            
+            <Grid Margin="20"
+                  HorizontalOptions="CenterAndExpand" 
+                  VerticalOptions="CenterAndExpand">
+                <BoxView BackgroundColor="Black"  />
+                <Grid x:Name="ChessGrid" 
+                  BackgroundColor="Black" 
+                  Margin="4" 
+                  HorizontalOptions="CenterAndExpand" 
+                  VerticalOptions="CenterAndExpand"
+                  ColumnSpacing="2"
+                  RowSpacing="2"
+                  >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Row="2" Grid.Column="2"
+                        Text="" FontSize="2"/>
+                </Grid>
+            </Grid>
+
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+                <Button Margin="5" Text="&#x21F5;" Clicked="RevertOrientationHandler" FontSize="22" FontFamily="Bold" WidthRequest="50" BorderRadius="5"/>
+                <Button Margin="5" Text="Reset" Clicked="ResetButtonClickedHandler" BorderRadius="5"/>
+                <Button x:Name="buttonUndo" Margin="5" Text="&lt;" Command="{Binding UndoLastMoveCommand}"
+                        IsEnabled="{Binding IsUndoLastMoveEnabled}" WidthRequest="50" BorderRadius="5"/>
+                <Button x:Name="buttonRedo" Margin="5" Text="&gt;" Command="{Binding RedoNextMoveCommand}"
+                        IsEnabled="{Binding IsRedoNextMoveEnabled}" WidthRequest="50" BorderRadius="5"/>
+            </StackLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
