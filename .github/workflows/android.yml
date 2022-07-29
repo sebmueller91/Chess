@@ -1,0 +1,33 @@
+name: Build Xamarin.Android
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API or when called by another workflow.
+on: [workflow_dispatch, workflow_call]
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set default Xamarin SDK versions
+      run: |
+        $VM_ASSETS/select-xamarin-sdk-v2.sh --mono=6.12 --android=12.0
+
+    - name: Setup .NET Core SDK 6.0.x
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Install dependencies
+      run: nuget restore src/Chess/Chess.sln
+
+    - name: Build
+      run: msbuild src/Chess/Chess/Chess.Android/Chess.Android.csproj /t:PackageForAndroid /t:SignAndroidPackage /p:Configuration=Release
+
+    - name: Archive APK
+      uses: actions/upload-artifact@v3
+      with: 
+        name: Chess APK
+        path: src/Chess/Chess/Chess.Android/bin/Release/dgs_software.chess-Signed.apk

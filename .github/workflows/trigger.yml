@@ -1,0 +1,15 @@
+name: Trigger Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-android: 
+    uses: ./.github/workflows/android.yml
+    
+ # build-ios: 
+ #   uses: ./.github/workflows/iOS.yml
