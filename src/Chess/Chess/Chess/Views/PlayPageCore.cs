@@ -74,6 +74,15 @@ namespace Chess.Views
             ViewModel.OrientationReverted = !ViewModel.OrientationReverted;
             AssignCellSelectedBindings(false);
             ViewModel.SaveCurrentGameStateCommand.Execute(null);
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    var rowIndex = getRowIndex(i);
+                    ChessBackgroundLabels[i,j].Background = new SolidColorBrush(Helpers.GetBoardBackgroundColor(rowIndex, j));
+                }
+            }
+
             RenderChessGame();
         }
 

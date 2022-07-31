@@ -1,10 +1,11 @@
 ﻿using Chess.AI;
 using Chess.Config;
 using Chess.Models;
+using Chess.Moves;
 using Chess.Services;
 using Chess.Utils;
 using System;
-
+using System.Collections.Generic;
 using Xamarin.Forms;
 using Cell = Chess.Models.Cell;
 
@@ -155,10 +156,28 @@ namespace Chess.ViewModels
             }
         }
 
+        Move _aiMove;
+        System.Timers.Timer _timer;
+
         private void DoAIMove()
         {
-            var move = aiMoveCalculationService.GetNextMoveForPlayer();
-            _executePieceMoveService.ExecuteMove(Game, move);
+            _aiMove = aiMoveCalculationService.GetNextMoveForPlayer();
+            //_executePieceMoveService.ExecuteMove(Game, move);
+            SelectedCell = _aiMove.FromCell;
+            PossibleMovesForCurrentPiece = new List<Move>();
+            PossibleMovesForCurrentPiece.Add(_aiMove);
+            _timer = new System.Timers.Timer(5000);
+            _timer.Elapsed += (sender, e) => HandleTimer();
+            _timer.Start();
+            FireModelChangedEvent();
+        }
+
+        private void HandleTimer()
+        {
+            _timer.Dispose();
+            SelectedCell = null;
+            PossibleMovesForCurrentPiece = null;
+            _executePieceMoveService.ExecuteMove(Game, _aiMove);            
             FireModelChangedEvent();
         }
     }
