@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Chess.Models
 {
-    public class GameState : BaseModel
+    public class GameState
     {
         public MoveStack MoveStack { get; set; }
         public Piece[][] Board { get; set; }
@@ -24,7 +24,6 @@ namespace Chess.Models
             set
             {
                 _currentPlayer = value;
-                OnPropertyChanged();
 
             }
         }
