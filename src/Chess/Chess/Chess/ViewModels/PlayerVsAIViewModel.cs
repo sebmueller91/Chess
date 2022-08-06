@@ -142,7 +142,7 @@ namespace Chess.ViewModels
         private void CreateNewAIGame(Difficulty difficulty)
         {
             Game = new GameState();
-            AIPlayerColor = Player.White;// TODO: Helpers.GetRandomPlayer();
+            AIPlayerColor = Helpers.GetRandomPlayer();
             aiMoveCalculationService = new AIMoveCalculationService(difficulty, Game, (Player) AIPlayerColor);
         }
 

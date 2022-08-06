@@ -22,7 +22,7 @@ namespace Chess.Views
             InitializeComponent();
             BindingContext = _viewModel = App.UnityContainer.Resolve<PlayerVsPlayerViewModel>();
 
-            Core = new PlayPageCore(_viewModel, ChessGrid);
+            Core = new PlayPageCore(_viewModel, ChessGrid, CurrentPlayerLabel);
 
             _viewModel.RequestRetrievePromotePawnType += async () => { await RequestTypeForPromotePawnFromUser(); };
 
