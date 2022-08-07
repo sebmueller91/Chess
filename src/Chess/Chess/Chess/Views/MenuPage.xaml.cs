@@ -6,14 +6,14 @@ using Xamarin.Forms.Xaml;
 
 namespace Chess.Views
 {
-    public partial class AboutPage : ContentPage
+    public partial class MenuPage : ContentPage
     {
-        private AboutViewModel _viewModel;
+        private MenuViewModel _viewModel;
 
-        public AboutPage()
+        public MenuPage()
         {
             InitializeComponent();
-            BindingContext = _viewModel = new AboutViewModel();
+            BindingContext = _viewModel = new MenuViewModel();
         }
     }
 }
