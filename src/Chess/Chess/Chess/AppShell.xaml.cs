@@ -15,10 +15,5 @@ namespace Chess
             Routing.RegisterRoute(nameof(PlayerVsPlayerPage), typeof(PlayerVsPlayerPage));
             Routing.RegisterRoute(nameof(PlayerVsAIPage), typeof(PlayerVsAIPage));
         }
-
-        private async void OnMenuItemClicked(object sender, EventArgs e)
-        {
-            await Shell.Current.GoToAsync("//LoginPage");
-        }
     }
 }
