@@ -1,23 +1,19 @@
-﻿using Chess.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using System;
+using System.ComponentModel;
+using Chess.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace Chess.Views
 {
-    [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class MenuPage : ContentPage
+    public partial class AboutPage : ContentPage
     {
-        private MenuViewModel _viewModel;
-        public MenuPage()
+        private AboutViewModel _viewModel;
+
+        public AboutPage()
         {
             InitializeComponent();
-            BindingContext = _viewModel = new MenuViewModel();
+            BindingContext = _viewModel = new AboutViewModel();
         }
     }
 }
