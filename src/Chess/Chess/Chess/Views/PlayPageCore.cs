@@ -17,14 +17,16 @@ namespace Chess.Views
         private Grid Grid { get; set; }
         private Button[,] GridButtons { get; set; }
         private Label[,] ChessBackgroundLabels { get; set; }
+        private Label CurrentPlayerLabel { get; set; } // TODO: Refactor: Small letter beginning
 
-        public PlayPageCore(BasePlayViewModel viewModel, Grid grid)
+        public PlayPageCore(BasePlayViewModel viewModel, Grid grid, Label currentPlayerLabel)
         {
             ViewModel = viewModel;
             Grid = grid;
 
             GridButtons = new Button[8, 8];
             ChessBackgroundLabels = new Label[8, 8];
+            CurrentPlayerLabel = currentPlayerLabel;
 
             InitializeChessGrid();
             ViewModel.ModelChanged += RenderChessGame;
@@ -66,6 +68,7 @@ namespace Chess.Views
                     Grid.Children.Add(button, j, i);
                 }
             }
+
             AssignCellSelectedBindings();
         }
 
@@ -97,6 +100,7 @@ namespace Chess.Views
                     GridButtons[getRowIndex(i), j].TextColor = GetTextColor(i, j);
                 }
             }
+            CurrentPlayerLabel.Text = ViewModel.Game.CurrentPlayer.ToString();
         }
 
         public void AssignCellSelectedBindings(bool initializing = true)

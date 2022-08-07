@@ -11,7 +11,7 @@
                          Margin="20"
                          HorizontalOptions="Center">
                 <Label Text="Current Player:" FontSize="15"/>
-                <Label Text="{Binding Game.CurrentPlayer}" FontSize="15"/>
+                <Label x:Name="CurrentPlayerLabel" Text="{Binding Game.CurrentPlayer}" FontSize="15"/>
             </StackLayout>
             
             <Grid Margin="20"

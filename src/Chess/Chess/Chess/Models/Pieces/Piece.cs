@@ -9,7 +9,7 @@ using System.Text;
 namespace Chess.Models
 {
     [JsonConverter(typeof(BaseConverter))]
-    public abstract class Piece : BaseModel
+    public abstract class Piece
     {
         public string ObjType { get; set; }
 
