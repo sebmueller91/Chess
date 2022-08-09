@@ -166,7 +166,7 @@ namespace Chess.ViewModels
             SelectedCell = _aiMove.FromCell;
             PossibleMovesForCurrentPiece = new List<Move>();
             PossibleMovesForCurrentPiece.Add(_aiMove);
-            _timer = new System.Timers.Timer(5000);
+            _timer = new System.Timers.Timer(2500);
             _timer.Elapsed += (sender, e) => HandleTimer();
             _timer.Start();
             FireModelChangedEvent();
@@ -177,7 +177,8 @@ namespace Chess.ViewModels
             _timer.Dispose();
             SelectedCell = null;
             PossibleMovesForCurrentPiece = null;
-            _executePieceMoveService.ExecuteMove(Game, _aiMove);            
+            _executePieceMoveService.ExecuteMove(Game, _aiMove);
+            _aiMove = null;
             FireModelChangedEvent();
         }
     }

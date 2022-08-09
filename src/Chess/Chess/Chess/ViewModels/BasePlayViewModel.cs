@@ -113,7 +113,7 @@ namespace Chess.ViewModels
                         _executePieceMoveService.ExecuteMove(Game, movetoExecute);
                         SelectedCell = previouslySelectedCell = null;
                         gameStateChanged = true;
-                        movePerformed = true;
+                        _movePerformed = true;
                     }
                     PossibleMovesForCurrentPiece?.Clear();
                 }
