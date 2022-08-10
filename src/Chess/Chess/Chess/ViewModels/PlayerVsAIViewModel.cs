@@ -6,6 +6,7 @@ using Chess.Services;
 using Chess.Utils;
 using System;
 using System.Collections.Generic;
+using System.Timers;
 using Xamarin.Forms;
 using Cell = Chess.Models.Cell;
 
@@ -72,6 +73,10 @@ namespace Chess.ViewModels
             }
         }
         #endregion
+
+        private Move _aiMove;
+        private Timer _aiMoveTimer;
+        bool _aiMoveBeingExecuted = false;
         #endregion
 
         public PlayerVsAIViewModel(IExecutePieceMoveService executePieceMoveService,
@@ -100,7 +105,7 @@ namespace Chess.ViewModels
         {
             Difficulty = difficulty;
             CreateNewAIGame(difficulty);
-            movePerformed = (Game.CurrentPlayer == AIPlayerColor); // AI must perform first move
+            nextMoveIsAIMove = (Game.CurrentPlayer == AIPlayerColor); // AI must perform first move
 
             ActiveGameProviderService.Instance.RegisterCurrentGame(Game);
 
@@ -129,7 +134,7 @@ namespace Chess.ViewModels
                 Difficulty = loaded_game.Difficulty;
                 AIPlayerColor = loaded_game.AIPlayerColor;
                 aiMoveCalculationService = new AIMoveCalculationService((Difficulty) Difficulty, Game, (Player) AIPlayerColor);
-                movePerformed = (Game.CurrentPlayer == AIPlayerColor);
+                nextMoveIsAIMove = (Game.CurrentPlayer == AIPlayerColor);
             }
             
             FireModelChangedEvent();
@@ -149,37 +154,48 @@ namespace Chess.ViewModels
 
         private void OnModelChanged()
         {
-            if (movePerformed)
+            if (nextMoveIsAIMove)
             {
-                movePerformed = false;
                 DoAIMove();
             }
         }
 
-        Move _aiMove;
-        System.Timers.Timer _timer;
-
         private void DoAIMove()
         {
+            if (_aiMoveBeingExecuted)
+            {
+                return;
+            }
+
             _aiMove = aiMoveCalculationService.GetNextMoveForPlayer();
-            //_executePieceMoveService.ExecuteMove(Game, move);
             SelectedCell = _aiMove.FromCell;
             PossibleMovesForCurrentPiece = new List<Move>();
             PossibleMovesForCurrentPiece.Add(_aiMove);
-            _timer = new System.Timers.Timer(2500);
-            _timer.Elapsed += (sender, e) => HandleTimer();
-            _timer.Start();
+
+            // Delay move execution so that it will be visualized
+            _aiMoveBeingExecuted = true;
+            _aiMoveTimer = new Timer(Constants.AIMoveDelay);
+            _aiMoveTimer.Elapsed += (sender, e) => HandleTimer();
+            _aiMoveTimer.Start();
+
             FireModelChangedEvent();
         }
 
         private void HandleTimer()
         {
-            _timer.Dispose();
+            if (_aiMove == null)
+            {
+                return;
+            }
+            _aiMoveBeingExecuted = false;
+            _aiMoveTimer.Dispose();
             SelectedCell = null;
-            PossibleMovesForCurrentPiece = null;
+            PossibleMovesForCurrentPiece = new List<Move>();           
             _executePieceMoveService.ExecuteMove(Game, _aiMove);
             _aiMove = null;
-            FireModelChangedEvent();
+            nextMoveIsAIMove = false;
+            UpdateField();
+            SaveCurrentGameStateCommand.Execute(null);
         }
     }
 }

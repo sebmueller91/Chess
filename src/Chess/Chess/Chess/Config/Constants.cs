@@ -8,6 +8,8 @@ namespace Chess.Config
 {
     public static class Constants
     {
+        public static readonly int AIMoveDelay = 2500; // Time that the AI move is visualized before being executed in milliseconds
+
         public static readonly string IDENTIFIER_GAMESTATE_PVP = "IDENTIFIER_GAMESTATE_PVP";
         public static readonly string IDENTIFIER_GAMESTATE_PVA = "IDENTIFIER_GAMESTATE_PVA";
 

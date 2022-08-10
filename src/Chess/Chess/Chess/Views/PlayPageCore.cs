@@ -77,15 +77,7 @@ namespace Chess.Views
             ViewModel.OrientationReverted = !ViewModel.OrientationReverted;
             AssignCellSelectedBindings(false);
             ViewModel.SaveCurrentGameStateCommand.Execute(null);
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    var rowIndex = getRowIndex(i);
-                    ChessBackgroundLabels[i,j].Background = new SolidColorBrush(Helpers.GetBoardBackgroundColor(rowIndex, j));
-                }
-            }
-
+            AssignBackgrounLabelBackgroundColors
             RenderChessGame();
         }
 
@@ -95,9 +87,9 @@ namespace Chess.Views
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    GridButtons[getRowIndex(i), j].Text = GetCellText(i, j);
-                    GridButtons[getRowIndex(i), j].Background = GetCellColor(i, j);
-                    GridButtons[getRowIndex(i), j].TextColor = GetTextColor(i, j);
+                    GridButtons[GetRowIndex(i), j].Text = GetCellText(i, j);
+                    GridButtons[GetRowIndex(i), j].Background = GetCellColor(i, j);
+                    GridButtons[GetRowIndex(i), j].TextColor = GetTextColor(i, j);
                 }
             }
             CurrentPlayerLabel.Text = ViewModel.Game.CurrentPlayer.ToString();
@@ -114,13 +106,25 @@ namespace Chess.Views
                         GridButtons[i, j].RemoveBinding(Button.CommandProperty);
                     }
                     GridButtons[i, j].SetBinding(Button.CommandProperty, new Binding { Path = "CellSelectedCommand" });
-                    var pos = new Tuple<int, int>(getRowIndex(i), j);
+                    var pos = new Tuple<int, int>(GetRowIndex(i), j);
                     GridButtons[i, j].CommandParameter = pos;
                 }
             }
         }
 
-        private int getRowIndex(int r)
+        private void AssignBackgrounLabelBackgroundColors()
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    var rowIndex = GetRowIndex(i);
+                    ChessBackgroundLabels[i, j].Background = new SolidColorBrush(Helpers.GetBoardBackgroundColor(rowIndex, j));
+                }
+            }
+        }
+
+        private int GetRowIndex(int r)
         {
             return ViewModel.OrientationReverted ? 7 - r : r;
         }

@@ -50,7 +50,7 @@ namespace Chess.ViewModels
 
         protected abstract string SAVE_IDENTIFIER { get; }
 
-        protected bool movePerformed = false;
+        protected bool nextMoveIsAIMove = false;
         #endregion
 
         #region Abstract Methods
@@ -113,7 +113,7 @@ namespace Chess.ViewModels
                         _executePieceMoveService.ExecuteMove(Game, movetoExecute);
                         SelectedCell = previouslySelectedCell = null;
                         gameStateChanged = true;
-                        _movePerformed = true;
+                        nextMoveIsAIMove = true;
                     }
                     PossibleMovesForCurrentPiece?.Clear();
                 }
@@ -152,7 +152,6 @@ namespace Chess.ViewModels
         {
             previouslySelectedCell = SelectedCell;
             var newlySelectedCell = new Cell(position.Item1, position.Item2);
-
 
             if (Helpers.MoveToPositionPromotesPawn(PossibleMovesForCurrentPiece, newlySelectedCell))
             {

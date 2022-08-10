@@ -6,21 +6,21 @@
     x:Class="Chess.Views.PlayerVsAIPage">
     <ContentPage.Content>
         <StackLayout VerticalOptions="Center" >
-            <StackLayout>
+            <StackLayout HorizontalOptions="FillAndExpand">
                 <StackLayout Orientation="Horizontal" VerticalOptions="Center"
-                         Margin="20,0"
+                         Margin="0"
                          HorizontalOptions="Center">
                     <Label Text="Difficulty:" FontSize="15"/>
                     <Label Text="{Binding Difficulty}" FontSize="15"/>
                 </StackLayout>
                 <StackLayout Orientation="Horizontal" VerticalOptions="Center"
-                         Margin="20,0"
+                         Margin="0"
                          HorizontalOptions="Center">
                     <Label Text="You are:" FontSize="15"/>
                     <Label Text="{Binding PlayerColor}" FontSize="15"/>
                 </StackLayout>
                 <StackLayout Orientation="Horizontal" VerticalOptions="Center"
-                         Margin="20,0"
+                         Margin="0"
                          HorizontalOptions="Center">
                     <Label Text="Current Player:" FontSize="15"/>
                     <Label x:Name="CurrentPlayerLabel" Text="{Binding Game.CurrentPlayer}" FontSize="15"/>
