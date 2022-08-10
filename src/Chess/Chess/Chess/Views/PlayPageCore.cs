@@ -77,7 +77,6 @@ namespace Chess.Views
             ViewModel.OrientationReverted = !ViewModel.OrientationReverted;
             AssignCellSelectedBindings(false);
             ViewModel.SaveCurrentGameStateCommand.Execute(null);
-            AssignBackgrounLabelBackgroundColors
             RenderChessGame();
         }
 
@@ -90,6 +89,7 @@ namespace Chess.Views
                     GridButtons[GetRowIndex(i), j].Text = GetCellText(i, j);
                     GridButtons[GetRowIndex(i), j].Background = GetCellColor(i, j);
                     GridButtons[GetRowIndex(i), j].TextColor = GetTextColor(i, j);
+                    AssignBackgrounLabelBackgroundColor(i, j);
                 }
             }
             CurrentPlayerLabel.Text = ViewModel.Game.CurrentPlayer.ToString();
@@ -112,16 +112,10 @@ namespace Chess.Views
             }
         }
 
-        private void AssignBackgrounLabelBackgroundColors()
+        private void AssignBackgrounLabelBackgroundColor(int row, int col)
         {
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    var rowIndex = GetRowIndex(i);
-                    ChessBackgroundLabels[i, j].Background = new SolidColorBrush(Helpers.GetBoardBackgroundColor(rowIndex, j));
-                }
-            }
+            var rowIndex = GetRowIndex(row);
+            ChessBackgroundLabels[row, col].Background = new SolidColorBrush(Helpers.GetBoardBackgroundColor(rowIndex, col));
         }
 
         private int GetRowIndex(int r)
