@@ -4,7 +4,7 @@ using Chess.Models;
 using Chess.Services;
 using Chess.Utils;
 using System;
-
+using System.Collections.Generic;
 using Xamarin.Forms;
 using Cell = Chess.Models.Cell;
 
@@ -15,6 +15,8 @@ namespace Chess.ViewModels
         #region Properties, Actions, Commands
         public Action RequestDifficultyDialog { get; set; }
         public Command<Difficulty> DifficultySelectedCommand { get; protected set; }
+
+        public List<Cell> AIMoveVisualizationCells { get; protected set; }
 
         protected override string SAVE_IDENTIFIER { get => Constants.IDENTIFIER_GAMESTATE_PVA; }
 
@@ -80,6 +82,8 @@ namespace Chess.ViewModels
             Title = "Player VS AI";
             Game = new GameState();
 
+            AIMoveVisualizationCells = new List<Cell>();
+
             DifficultySelectedCommand = new Command<Difficulty>(DifficultySelectedCommandHandler);
             ModelChanged += OnModelChanged;
         }
@@ -88,6 +92,7 @@ namespace Chess.ViewModels
         {
             if (Game.CurrentPlayer == PlayerColor)
             {
+                AIMoveVisualizationCells?.Clear();
                 base.CellSelectedCommandHandler(position);
             } else // AI is currently performing move -> mark selected cell but do nothing else
             {
@@ -159,6 +164,11 @@ namespace Chess.ViewModels
         {
             var move = aiMoveCalculationService.GetNextMoveForPlayer();
             _executePieceMoveService.ExecuteMove(Game, move);
+
+            AIMoveVisualizationCells?.Clear();
+            AIMoveVisualizationCells?.Add(move.FromCell);
+            AIMoveVisualizationCells?.Add(move.ToCell);
+
             FireModelChangedEvent();
         }
     }

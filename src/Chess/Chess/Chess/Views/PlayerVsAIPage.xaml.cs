@@ -1,9 +1,11 @@
-﻿using Chess.Models;
+﻿using Chess.Config;
+using Chess.Models;
 using Chess.Models.Pieces;
 using Chess.Services;
 using Chess.ViewModels;
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Unity;
 using Xamarin.Forms;
@@ -30,6 +32,23 @@ namespace Chess.Views
 
             _viewModel.DisplayPlayerWonNotification += DisplayPlayerWonDialog;
             _viewModel.DisplayStalemateNotification += DisplayStalemateDialog;
+
+            Core.ChessGameRendered += RenderChessGameAISpecifics;
+        }
+
+        public void RenderChessGameAISpecifics()
+        {
+            // Visualize move of AI
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if ((bool) _viewModel?.AIMoveVisualizationCells.Any(x => x.Row == i && x.Col == j))
+                    {
+                        Core.SetCellBackground(i,j,Constants.COLOR_AI_MOVE_BACKGROUND);
+                    }
+                }
+            }
         }
 
         private void DisplayPlayerWonDialog(Player player)
