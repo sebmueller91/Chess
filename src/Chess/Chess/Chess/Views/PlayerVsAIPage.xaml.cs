@@ -43,9 +43,16 @@ namespace Chess.Views
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    if ((bool) _viewModel?.AIMoveVisualizationCells.Any(x => x.Row == i && x.Col == j))
+                    if ((bool)_viewModel?.AIMoveVisualizationCells.Any(x => x.Row == i && x.Col == j))
                     {
-                        Core.SetCellBackground(i,j,Constants.COLOR_AI_MOVE_BACKGROUND);
+                        if (_viewModel.Game.Board[i][j].Player == _viewModel.AIPlayerColor)
+                        {
+                            Core.SetCellBackground(i, j, Constants.COLOR_AI_MOVE_BACKGROUND);
+                        } else
+                        {
+                            Core.SetCellText(i, j, Constants.TEXT_POSSIBLE_MOVE); // TODO: New text ressource
+                            Core.SetCellTextColor(i, j, Constants.COLOR_AI_MOVE_BACKGROUND); 
+                        }
                     }
                 }
             }
@@ -120,7 +127,8 @@ namespace Chess.Views
             else if (choice == normalText)
             {
                 _viewModel.DifficultySelectedCommand.Execute(Difficulty.Normal);
-            } else
+            }
+            else
             {
                 _viewModel.DifficultySelectedCommand.Execute(Difficulty.Hard);
             }

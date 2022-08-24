@@ -120,6 +120,16 @@ namespace Chess.Views
             GridButtons[GetRowIndex(row), col].Background = color;
         }
 
+        public void SetCellText(int row, int col, string text)
+        {
+            GridButtons[GetRowIndex(row), col].Text = text;
+        }
+
+        public void SetCellTextColor(int row, int col, Color color)
+        {
+            GridButtons[GetRowIndex(row), col].TextColor = color;
+        }
+
         private int GetRowIndex(int r)
         {
             return ViewModel.OrientationReverted ? 7 - r : r;
