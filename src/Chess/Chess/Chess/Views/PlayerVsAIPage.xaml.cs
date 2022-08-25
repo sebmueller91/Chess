@@ -1,9 +1,11 @@
-﻿using Chess.Models;
+﻿using Chess.Config;
+using Chess.Models;
 using Chess.Models.Pieces;
 using Chess.Services;
 using Chess.ViewModels;
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Unity;
 using Xamarin.Forms;
@@ -30,6 +32,32 @@ namespace Chess.Views
 
             _viewModel.DisplayPlayerWonNotification += DisplayPlayerWonDialog;
             _viewModel.DisplayStalemateNotification += DisplayStalemateDialog;
+
+            Core.ChessGameRendered += RenderChessGameAISpecifics;
+        }
+
+        public void RenderChessGameAISpecifics()
+        {
+            // Visualize move of AI
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if ((bool)_viewModel?.AIMoveVisualizationCells.Any(x => x.Row == i && x.Col == j))
+                    {
+                        if (_viewModel.Game.Board[i][j].Player == _viewModel.AIPlayerColor)
+                        {
+                            Core.SetCellBackground(i, j, Constants.COLOR_TRANSPARENT);
+                            Core.SetBackgroundLabelTextColor(i, j, Constants.COLOR_AI_MOVE_BACKGROUND);
+                        }
+                        else
+                        {
+                            Core.SetCellText(i, j, Constants.TEXT_POSSIBLE_MOVE); // TODO: New text ressource
+                            Core.SetCellTextColor(i, j, Constants.COLOR_AI_MOVE_BACKGROUND); 
+                        }
+                    }
+                }
+            }
         }
 
         private void DisplayPlayerWonDialog(Player player)
@@ -101,7 +129,8 @@ namespace Chess.Views
             else if (choice == normalText)
             {
                 _viewModel.DifficultySelectedCommand.Execute(Difficulty.Normal);
-            } else
+            }
+            else
             {
                 _viewModel.DifficultySelectedCommand.Execute(Difficulty.Hard);
             }

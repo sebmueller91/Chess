@@ -13,6 +13,8 @@ namespace Chess.Views
 {
     public class PlayPageCore : ContentPage, INotifyPropertyChanged
     {
+        public event Action ChessGameRendered;
+
         private BasePlayViewModel ViewModel { get; set; }
         private Grid Grid { get; set; }
         private Button[,] GridButtons { get; set; }
@@ -53,7 +55,7 @@ namespace Chess.Views
 
                     var backgroundLabel = new Label()
                     {
-                        TextColor = Constants.COLOR_BACKGROUND_LABEL_BACKGROUND,
+                        TextColor = Constants.COLOR_BACKGROUND_LABEL_TEXT_COLOR,
                         Background = new SolidColorBrush(Helpers.GetBoardBackgroundColor(i, j)),
                         Text = Constants.TEXT_BACKGROUND_LABEL_SYMBOL,
                         FontAttributes = FontAttributes.Bold,
@@ -80,18 +82,21 @@ namespace Chess.Views
             RenderChessGame();
         }
 
-        public void RenderChessGame()
+        public virtual void RenderChessGame()
         {
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    GridButtons[getRowIndex(i), j].Text = GetCellText(i, j);
-                    GridButtons[getRowIndex(i), j].Background = GetCellColor(i, j);
-                    GridButtons[getRowIndex(i), j].TextColor = GetTextColor(i, j);
+                    GridButtons[GetRowIndex(i), j].Text = GetCellText(i, j);
+                    GridButtons[GetRowIndex(i), j].Background = GetCellColor(i, j);
+                    GridButtons[GetRowIndex(i), j].TextColor = GetTextColor(i, j);
+                    ChessBackgroundLabels[i, j].TextColor = Constants.COLOR_BACKGROUND_LABEL_TEXT_COLOR;
                 }
             }
             CurrentPlayerLabel.Text = ViewModel.Game.CurrentPlayer.ToString();
+
+            ChessGameRendered?.Invoke();
         }
 
         public void AssignCellSelectedBindings(bool initializing = true)
@@ -105,13 +110,33 @@ namespace Chess.Views
                         GridButtons[i, j].RemoveBinding(Button.CommandProperty);
                     }
                     GridButtons[i, j].SetBinding(Button.CommandProperty, new Binding { Path = "CellSelectedCommand" });
-                    var pos = new Tuple<int, int>(getRowIndex(i), j);
+                    var pos = new Tuple<int, int>(GetRowIndex(i), j);
                     GridButtons[i, j].CommandParameter = pos;
                 }
             }
         }
 
-        private int getRowIndex(int r)
+        public void SetBackgroundLabelTextColor(int row, int col, Color color)
+        {
+            ChessBackgroundLabels[row, col].TextColor = color;
+        }
+
+        public void SetCellBackground(int row, int col, Color color)
+        {
+            GridButtons[GetRowIndex(row), col].Background = color;
+        }
+
+        public void SetCellText(int row, int col, string text)
+        {
+            GridButtons[GetRowIndex(row), col].Text = text;
+        }
+
+        public void SetCellTextColor(int row, int col, Color color)
+        {
+            GridButtons[GetRowIndex(row), col].TextColor = color;
+        }
+
+        private int GetRowIndex(int r)
         {
             return ViewModel.OrientationReverted ? 7 - r : r;
         }

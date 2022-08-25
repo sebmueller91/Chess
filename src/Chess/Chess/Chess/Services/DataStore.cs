@@ -46,8 +46,8 @@ namespace Chess.Services
                 Identifier = identifier,
                 Game = gameObject,
                 OrientationReverted = orientationReverted,
-                Difficulty = (Difficulty) difficulty,
-                AIPlayerColor = (Player) aiPlayerColor
+                Difficulty = difficulty ?? Difficulty.Easy,
+                AIPlayerColor = aiPlayerColor ?? Player.None
             };
             return ChessDatabase.SaveGame(db_game);
         } 
