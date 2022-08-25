@@ -47,8 +47,10 @@ namespace Chess.Views
                     {
                         if (_viewModel.Game.Board[i][j].Player == _viewModel.AIPlayerColor)
                         {
-                            Core.SetCellBackground(i, j, Constants.COLOR_AI_MOVE_BACKGROUND);
-                        } else
+                            Core.SetCellBackground(i, j, Constants.COLOR_TRANSPARENT);
+                            Core.SetBackgroundLabelTextColor(i, j, Constants.COLOR_AI_MOVE_BACKGROUND);
+                        }
+                        else
                         {
                             Core.SetCellText(i, j, Constants.TEXT_POSSIBLE_MOVE); // TODO: New text ressource
                             Core.SetCellTextColor(i, j, Constants.COLOR_AI_MOVE_BACKGROUND); 

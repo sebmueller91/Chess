@@ -37,8 +37,8 @@ namespace Chess.Config
         public static readonly Color COLOR_POSSIBLE_MOVE_CELL = Color.DarkCyan;
         public static readonly Color COLOR_BOARD_BACKGROUND_BLACK = Color.DarkGray;
         public static readonly Color COLOR_BOARD_BACKGROUND_WHITE = Color.FromHex("336600");
-        public static readonly Color COLOR_BACKGROUND_LABEL_BACKGROUND = Color.Red;
-        public static readonly Color COLOR_AI_MOVE_BACKGROUND = Color.DarkBlue;
+        public static readonly Color COLOR_BACKGROUND_LABEL_TEXT_COLOR = Color.Red;
+        public static readonly Color COLOR_AI_MOVE_BACKGROUND = Color.LightSkyBlue;
 
         public static readonly string TEXT_POSSIBLE_MOVE = "\u2B24";
         public static readonly string TEXT_BISHOP = "\u265D";

@@ -55,7 +55,7 @@ namespace Chess.Views
 
                     var backgroundLabel = new Label()
                     {
-                        TextColor = Constants.COLOR_BACKGROUND_LABEL_BACKGROUND,
+                        TextColor = Constants.COLOR_BACKGROUND_LABEL_TEXT_COLOR,
                         Background = new SolidColorBrush(Helpers.GetBoardBackgroundColor(i, j)),
                         Text = Constants.TEXT_BACKGROUND_LABEL_SYMBOL,
                         FontAttributes = FontAttributes.Bold,
@@ -91,6 +91,7 @@ namespace Chess.Views
                     GridButtons[GetRowIndex(i), j].Text = GetCellText(i, j);
                     GridButtons[GetRowIndex(i), j].Background = GetCellColor(i, j);
                     GridButtons[GetRowIndex(i), j].TextColor = GetTextColor(i, j);
+                    ChessBackgroundLabels[i, j].TextColor = Constants.COLOR_BACKGROUND_LABEL_TEXT_COLOR;
                 }
             }
             CurrentPlayerLabel.Text = ViewModel.Game.CurrentPlayer.ToString();
@@ -113,6 +114,11 @@ namespace Chess.Views
                     GridButtons[i, j].CommandParameter = pos;
                 }
             }
+        }
+
+        public void SetBackgroundLabelTextColor(int row, int col, Color color)
+        {
+            ChessBackgroundLabels[row, col].TextColor = color;
         }
 
         public void SetCellBackground(int row, int col, Color color)
