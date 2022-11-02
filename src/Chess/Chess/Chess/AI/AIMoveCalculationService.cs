@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Chess.Config;
 using Chess.Models;
 using Chess.Moves;
+using Chess.Moves.Actions;
 using Chess.Services;
 using Chess.Utils;
 using Unity;
@@ -20,7 +22,7 @@ namespace Chess.AI
         private GameState _game;
         private Player _aiPlayer;
 
-        private const int MAX_DEPTH = 2; // TODO: Move into constants? Or Is this part of the difficulty?
+        private const int MAX_DEPTH = 4; // TODO: Move into constants? Or Is this part of the difficulty?
 
         public AIMoveCalculationService(Difficulty difficulty, GameState game, Player aiPlayer)
         {
@@ -39,13 +41,27 @@ namespace Chess.AI
             return bestMoveSeries.Moves[0];
         }
 
+        Hashtable evaluatedMovesHashtable = new Hashtable();
+
         private MoveSeries MinMaxWithAlphaBetaPruning(List<Move> moves, int depth, int alpha, int beta)
-        {    
+        {
+            var hashtableEntry = new AIMoveHashTableEntry(_game.Board);
+            evaluatedMovesHashtable.Add(hashtableEntry, 23);
+
+
             if (depth == MAX_DEPTH)
-            {
+            {                
+                evaluatedMovesHashtable.Add(hashtableEntry, 23);
+
                 return EvaluateMoves(moves);
             }
-     
+
+            var hashValue = evaluatedMovesHashtable[hashtableEntry];
+            if (hashValue != null)
+            {
+                return new MoveSeries(moves, (int)hashValue);
+            }
+
             var isCheckMate = _pieceMoveOptionsService.IsCheckmate(_game, _game.CurrentPlayer);
             var isStaleMate = _pieceMoveOptionsService.IsStalemate(_game, _game.CurrentPlayer);
 
@@ -55,6 +71,7 @@ namespace Chess.AI
             else
             {
                 var possibleMoves = GetAllPossibleMovesOfCurrentPlayer();
+                possibleMoves = OrderMoves(possibleMoves);
                 if (_game.CurrentPlayer == _aiPlayer) // Maximize
                 {
                     MoveSeries bestSeries = null;
@@ -64,16 +81,12 @@ namespace Chess.AI
                         moves.Add(curMove);
                         var oldMoveStack = _game.MoveStack.Clone();
 
-                        if (curMove.FromCell.Equals(new Cell(6,0)) && curMove.ToCell.Equals(new Cell(4,0)))
-                        {
-                            var a = 4;
-                        }
                         _executePieceMoveService.ExecuteMove(_game, curMove);
-                        var curSeries = MinMaxWithAlphaBetaPruning(CloneList(moves), depth + 1, alpha, beta);
+                        var curSeries = MinMaxWithAlphaBetaPruning(moves, depth + 1, alpha, beta);
 
                         if (bestSeries == null || curSeries.Score > bestSeries.Score)
                         {
-                            bestSeries = curSeries.Clone();
+                            bestSeries = curSeries;
                         }
                         RollbackAndRemoveLastMove(moves, oldMoveStack);
 
@@ -94,11 +107,11 @@ namespace Chess.AI
                         var oldMoveStack = _game.MoveStack.Clone();
 
                         _executePieceMoveService.ExecuteMove(_game, moves.Last());
-                        var curSeries = MinMaxWithAlphaBetaPruning(CloneList(moves), depth + 1, alpha, beta);
+                        var curSeries = MinMaxWithAlphaBetaPruning(moves, depth + 1, alpha, beta);
 
                         if (bestSeries == null || curSeries.Score < bestSeries.Score)
                         {
-                            bestSeries = curSeries.Clone();
+                            bestSeries = curSeries;
 
                         }
 
@@ -116,6 +129,48 @@ namespace Chess.AI
             }
         }
 
+        private List<Move> OrderMovesByHeuristicScore(List<Move> moves)
+        {
+            var orderedMoves = new List<Move>();
+            var orderedMovesScores = new List<int>();
+
+            var randomIndices = Helpers.GenerateRandomIndicesList(moves.Count);
+
+            for (int i = 0; i < randomIndices.Count; i++)
+            {
+                var score = GetHeuristicScoreForMove(moves[i]);
+                InsertMoveIntoOrderedMoveList(orderedMoves, orderedMovesScores, moves[i], score);
+            }
+
+            return orderedMoves;
+        }
+
+        private void InsertMoveIntoOrderedMoveList(List<Move> orderedMoves, List<int> orderedMovesScores, Move move, int score)
+        {
+            int index = 0;
+            for (index = 0; index < orderedMoves.Count(); index++)
+            {
+                if (orderedMovesScores[index] < score)
+                {
+                    break;
+                }
+            }
+            orderedMoves.Insert(index, move);
+            orderedMovesScores.Insert(index, score);
+        }
+
+        private int GetHeuristicScoreForMove(Move move)
+        {
+            foreach (var action in move.Actions)
+            {
+                if (action is CapturePieceAction)
+                {
+                    return 10;
+                }
+            }
+            return 0;
+        }
+
         private void RollbackAndRemoveLastMove(List<Move> moves, MoveStack oldMoveStack)
         {
             _executePieceMoveService.RollbackLastMove(_game);
@@ -123,7 +178,7 @@ namespace Chess.AI
             Helpers.GetCurrentGame().MoveStack = oldMoveStack;
         }
 
-        private List<Move> CloneList(List<Move> list)
+        private List<Move> CloneMoveList(List<Move> list)
         {
             var newList = new List<Move>();
             for (int i = 0; i < list.Count; i++)
@@ -136,7 +191,7 @@ namespace Chess.AI
         private MoveSeries EvaluateMoves(List<Move> moves)
         {
             var score = _evaluationFunction.EvaluateGameState();
-            return new MoveSeries(moves, score);
+            return new MoveSeries(CloneMoveList(moves), score);
         }
 
         private List<Move> GetAllPossibleMovesOfCurrentPlayer()
@@ -163,28 +218,6 @@ namespace Chess.AI
         private int Min(int i1, int i2)
         {
             return (i1 < i2) ? i1 : i2;
-        }
-
-        private class MoveSeries 
-        {
-            public List<Move> Moves { get; set; }
-            public int Score { get; set; }
-            public MoveSeries(List<Move> moves, int score)
-            {
-                Moves = moves;
-                Score = score;
-            }
-
-            public MoveSeries Clone()
-            {
-                var clonedMoves = new List<Move>();
-                for (int i = 0; i < this.Moves.Count; i++)
-                {
-                    clonedMoves.Add(this.Moves[i].Clone());
-                }
-
-                return new MoveSeries(clonedMoves, this.Score);
-            }
         }
     }
 }

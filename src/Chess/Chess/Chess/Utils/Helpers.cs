@@ -37,7 +37,25 @@ namespace Chess.Utils
             }
         }
 
-        public static T[][] TwoDimJaggedArray<T>(int rows, int cols)
+        public static List<int> GenerateRandomIndicesList(int max)
+        {
+            var numbers = new List<int>();
+            var numbersOrdered = new List<int>();
+            for (int i = 0; i < max; i++)
+            {
+                numbers.Add(i);
+            }
+            Random rnd = new Random();
+            while (numbers.Count > 0)
+            {
+                int index = rnd.Next(numbers.Count);
+                numbersOrdered.Add(numbers[index]);
+                numbers.RemoveAt(index);
+            }
+            return numbersOrdered;
+        }
+
+        public static T[][] TwoDimJaggedArray<T>(int rows, int cols) 
         {
             var array = new T[rows][];
             for (int i = 0; i < rows; i++)

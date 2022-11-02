@@ -21,19 +21,17 @@ namespace Chess.Moves.Actions
 
         public override void Execute()
         {
-            GameState game = Helpers.GetCurrentGame();
-            {
-                var a = 2;
-            }
+            var game = Helpers.GetCurrentGame();
             game.SetBoardEntry(NewCell, game.Board[OldCell.Row][OldCell.Col]);
             game.SetBoardEntry(OldCell, new Empty());
         }
 
         public override void Rollback()
         {
-            GameState game = Helpers.GetCurrentGame();
-            game.SetBoardEntry(OldCell, Helpers.GetCurrentGame().Board[NewCell.Row][NewCell.Col]);
-            game.SetBoardEntry(NewCell, new Empty());
+            var game = Helpers.GetCurrentGame();
+            var emptyCell = game.Board[OldCell.Row][OldCell.Col];
+            game.SetBoardEntry(OldCell, game.Board[NewCell.Row][NewCell.Col]);
+            game.SetBoardEntry(NewCell, emptyCell);
         }
 
         public override RevertableAction Clone()

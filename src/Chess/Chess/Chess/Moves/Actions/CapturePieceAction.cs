@@ -20,10 +20,6 @@ namespace Chess.Moves.Actions
         public override void Execute()
         {
             Piece = Helpers.GetCurrentGame().Board[Position.Row][Position.Col];
-            if (Piece is King)
-            {
-                var a = 4;
-            }
             Helpers.GetCurrentGame().SetBoardEntry(Position, new Empty());
         }
 
