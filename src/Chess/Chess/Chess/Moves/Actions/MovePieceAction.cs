@@ -22,9 +22,6 @@ namespace Chess.Moves.Actions
         public override void Execute()
         {
             GameState game = Helpers.GetCurrentGame();
-            {
-                var a = 2;
-            }
             game.SetBoardEntry(NewCell, game.Board[OldCell.Row][OldCell.Col]);
             game.SetBoardEntry(OldCell, new Empty());
         }
